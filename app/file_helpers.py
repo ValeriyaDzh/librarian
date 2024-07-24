@@ -16,3 +16,10 @@ def save(data, file_path: str) -> None:
 
     with open(file_path, "w", encoding="utf-8") as file:
         json.dump(existed_data, file, ensure_ascii=False, indent=2)
+
+
+def update(data, file_path: str) -> None:
+    new_data = {"books": data}
+
+    with open(file_path, "w", encoding="utf-8") as file:
+        json.dump(new_data, file, ensure_ascii=False, indent=2)
