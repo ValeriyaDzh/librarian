@@ -15,12 +15,12 @@ class TestFileHelpers(unittest.TestCase):
         with open(file_path, encoding="utf-8") as file:
             file_data = json.load(file)
             self.assertEqual(
-                data, file_data, "Data saved in file does not match the expected data."
+                data, file_data, "Data saved in file doesn't match the expected data."
             )
 
         loaded_data = load_data(file_path)
         self.assertEqual(
-            data, loaded_data, "Data loaded from file does not match the expected data."
+            data, loaded_data, "Data loaded from file doesn't match the expected data."
         )
 
         os.remove(file_path)
@@ -30,7 +30,7 @@ class TestFileHelpers(unittest.TestCase):
 
         loaded_data = load_data(fake_file_path)
         self.assertEqual(
-            loaded_data, [], "Expected empty list when file does not exist."
+            loaded_data, [], "Expected empty list when file doesn't exist."
         )
 
 
