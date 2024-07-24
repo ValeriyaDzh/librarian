@@ -46,6 +46,28 @@ class Librarian:
         else:
             print(f"\nThere is no book with id: {id}")
 
+    def serch_book(self, key: str, value: str):
+        if key.lower() in ("id", "author", "title", "year", "status"):
+            books = self._load_books()["books"]
+            res_books = []
+            for book in books:
+                if book[key.lower()] == value:
+                    res_books.append(book)
+
+            if res_books:
+                for b in res_books:
+                    print(f"\n{Librarian._formater(b)}")
+            else:
+                print(f"\nThe book with {key}: {value} was not found")
+
+    @staticmethod
+    def _formater(book_dict: dict[str, str]) -> str:
+        string = ["Book"]
+        for k, v in book_dict.items():
+            string.append(f"{k}: {v}")
+
+        return ", ".join(string)
+
 
 l = Librarian()
 
@@ -53,4 +75,5 @@ l.add_book("1", "A", "12344")
 l.add_book("2", "B", "12344")
 l.delete_book("59175f94-2024-07-24")
 l.add_book("34", "Bфф", "12344")
-l.delete_book("59175f94-2024-07-24")
+l.serch_book("author", "A")
+l.serch_book("author", "AAAA")
