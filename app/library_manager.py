@@ -30,23 +30,25 @@ class Librarian:
             self.db.save_book(new_book_dict)
 
             print(f"\nBook has been saved successfully.\nID: {new_book_dict['id']}")
+            return new_book_dict
         except Exception as e:
             print(f"\nError saving the book: {e}")
 
     def delete_book(self, id: str) -> None:
         try:
             del_book = self._get_by_id(id)
-            books = self._load_books()["books"]
+            books = self.db.load_books()["books"]
             books.pop(del_book)
             self.db.update_books(books)
             print(f"\nBook {id} has been deleted successfully.")
+            return id
 
         except NotFoundException:
             print(f"\nBook with ID {id} not found.")
         except Exception as e:
             print(f"\nError deleting the book: {e}")
 
-    def serch_book(self, key: str, value: str):
+    def search_book(self, key: str, value: str):
         try:
             if key.lower() not in ("id", "author", "title", "year", "status"):
                 raise InvalidFieldException
@@ -71,6 +73,7 @@ class Librarian:
         books = self.db.load_books()["books"]
         for b in books:
             print(f"\n{Librarian._formater(b)}")
+        return books
 
     def change_status(self, id: str, new_status: str):
         try:
@@ -105,9 +108,3 @@ class Librarian:
             string.append(f"{k}: {v}")
 
         return ", ".join(string)
-
-
-l = Librarian()
-
-l.add_book("f", "GG", "12345")
-l.serch_book("GG", "s")
