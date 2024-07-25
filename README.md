@@ -3,16 +3,16 @@
 
 ## 🚀 Установка и запуск
 
-### Клонируйте репозиторий
+1. Клонируйте репозиторий
 
 ```bash
 git clone https://github.com/ValeriyaDzh/librarian.git
 ```
 
-### Запустите приложение
+2. Запустите приложение
 
 ```bash
-python app/main.py
+python3 app/main.py
 ```
 
 ## Тесты
@@ -20,5 +20,5 @@ python app/main.py
 Для запуска тестов воспользуйтесь командой:
 
 ```bash
-python -m unittest discover -s tests
+python3 -m unittest discover -s tests
 ```
