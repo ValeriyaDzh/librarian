@@ -1,88 +1,102 @@
 from file_helpers import save, load_data, update
 from models import Book
+from exceptions import NotFoundException, InvalidFieldException, InvalidStatusException
+
+
+class LibraryDatabase:
+
+    def __init__(self) -> None:
+        self.path = "library.json"
+
+    def save_book(self, book: dict[str, str]):
+        save(book, self.path)
+
+    def load_books(self):
+        return load_data(self.path)
+
+    def update_books(self, books: dict[str, str]):
+        return update(books, self.path)
 
 
 class Librarian:
 
     def __init__(self) -> None:
-        self.path = "library.json"
-
-    def _save_book(self, book: dict[str, str]):
-        save(book, self.path)
-
-    def _load_books(self):
-        return load_data(self.path)
-
-    def _update_books(self, books: dict[str, str]):
-        return update(books, self.path)
-
-    def _get_by_id(self, id: str) -> int | None:
-        # добавить обработку исключения NotFound
-        books = self._load_books()["books"]
-        for i, book in enumerate(books):
-            if book["id"] == id:
-                return i
+        self.db = LibraryDatabase()
 
     def add_book(self, title: str, author: str, year: str) -> None:
         new_book = Book(title, author, year)
         try:
             new_book_dict = vars(new_book)
-            self._save_book(new_book_dict)
+            self.db.save_book(new_book_dict)
 
             print(f"\nBook has been saved successfully.\nID: {new_book_dict['id']}")
         except Exception as e:
-            print(f"Error saving the book: {e}")
+            print(f"\nError saving the book: {e}")
 
     def delete_book(self, id: str) -> None:
-        del_book = self._get_by_id(id)
-        if del_book:
-            try:
-                books = self._load_books()["books"]
-                books.pop(del_book)
-                self._update_books(books)
+        try:
+            del_book = self._get_by_id(id)
+            books = self._load_books()["books"]
+            books.pop(del_book)
+            self.db.update_books(books)
+            print(f"\nBook {id} has been deleted successfully.")
 
-                print(f"\nBook {id} has been deleted successfully.")
-            except Exception as e:
-                print(f"Error deleting the book: {e}")
-        else:
-            # добавить нормальные эксепшны
-            print(f"\nThere is no book with id: {id}")
+        except NotFoundException:
+            print(f"\nBook with ID {id} not found.")
+        except Exception as e:
+            print(f"\nError deleting the book: {e}")
 
     def serch_book(self, key: str, value: str):
-        if key.lower() in ("id", "author", "title", "year", "status"):
-            books = self._load_books()["books"]
-            res_books = []
-            for book in books:
-                if book[key.lower()] == value:
-                    res_books.append(book)
+        try:
+            if key.lower() not in ("id", "author", "title", "year", "status"):
+                raise InvalidFieldException
+
+            books = self.db.load_books()["books"]
+            res_books = [book for book in books if book.get(key.lower()) == value]
 
             if res_books:
                 for b in res_books:
                     print(f"\n{Librarian._formater(b)}")
             else:
-                # добавить нормальные эксепшны
-                print(f"\nThe book with {key}: {value} was not found")
-        else:
-            # добавить нормальные эксепшны
-            print(
-                f"\nInvalid search field: {key}\nAcceptable fields: id, author, title, year, status"
-            )
+                raise NotFoundException
+
+        except InvalidFieldException as e:
+            print(f"\nInvalid field '{key}'.{e}")
+        except NotFoundException:
+            print(f"\nNo books found with {key} = '{value}'.")
+        except Exception as e:
+            print(f"Error searching for the book: {e}")
 
     def get_all_books(self):
-        books = self._load_books()["books"]
+        books = self.db.load_books()["books"]
         for b in books:
             print(f"\n{Librarian._formater(b)}")
 
     def change_status(self, id: str, new_status: str):
-        if new_status in ("в наличии", "выдана"):
-            index = self._get_by_id(id)
-            books = self._load_books()["books"]
-            books[index]["status"] = new_status
-            self._update_books(books)
+        try:
+            if new_status not in ("в наличии", "выдана"):
+                raise InvalidStatusException
 
-        else:
-            # добавить нормальные эксепшны
-            print(f"\nInvalid status\nAcceptable: в наличии, выдана")
+            index = self._get_by_id(id)
+            books = self.db.load_books()["books"]
+            books[index]["status"] = new_status
+            self.db.update_books(books)
+            print(f"\nBook status has been changed successfully.")
+
+        except InvalidStatusException as e:
+            print(f"\nInvalid status '{new_status}'.{e}")
+        except NotFoundException:
+            print(f"\nBook with ID {id} not found.")
+        except Exception as e:
+            print(f"\nError changing book status: {e}")
+
+    def _get_by_id(self, id: str) -> int | None:
+        books = self.db.load_books()["books"]
+        for i, book in enumerate(books):
+            if book["id"] == id:
+                return i
+            else:
+                raise NotFoundException
 
     @staticmethod
     def _formater(book_dict: dict[str, str]) -> str:
@@ -93,15 +107,7 @@ class Librarian:
         return ", ".join(string)
 
 
-# l = Librarian()
+l = Librarian()
 
-# l.add_book("1", "A", "12344")
-# l.add_book("2", "B", "12344")
-# l.delete_book("59175f94-2024-07-24")
-# l.add_book("34", "Bфф", "12344")
-# l.serch_book("author", "A")
-# l.serch_book("author", "AAAA")
-# l.serch_book("au", "AAAA")
-# l.get_all_books()
-# l.change_status("a93f43ce-2024-07-24", "выдана")
-# l.serch_book("id", "a93f43ce-2024-07-24")
+l.add_book("f", "GG", "12345")
+l.serch_book("GG", "s")
