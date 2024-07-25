@@ -23,7 +23,7 @@ class Librarian:
     def __init__(self) -> None:
         self.db = LibraryDatabase()
 
-    def add_book(self, title: str, author: str, year: str) -> None:
+    def add_book(self, title: str, author: str, year: str) -> dict[str, str]:
         new_book = Book(title, author, year)
         try:
             new_book_dict = vars(new_book)
@@ -34,7 +34,7 @@ class Librarian:
         except Exception as e:
             print(f"\nError saving the book: {e}")
 
-    def delete_book(self, id: str) -> None:
+    def delete_book(self, id: str) -> str:
         try:
             del_book = self._get_by_id(id)
             books = self.db.load_books()["books"]
@@ -69,7 +69,7 @@ class Librarian:
         except Exception as e:
             print(f"Error searching for the book: {e}")
 
-    def get_all_books(self):
+    def get_all_books(self) -> list[dict]:
         books = self.db.load_books()["books"]
         for b in books:
             print(f"\n{Librarian._formater(b)}")
@@ -93,7 +93,7 @@ class Librarian:
         except Exception as e:
             print(f"\nError changing book status: {e}")
 
-    def _get_by_id(self, id: str) -> int | None:
+    def _get_by_id(self, id: str) -> int:
         books = self.db.load_books()["books"]
         for i, book in enumerate(books):
             if book["id"] == id:
