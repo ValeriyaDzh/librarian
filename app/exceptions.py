@@ -17,6 +17,6 @@ class InvalidStatusException(Exception):
 
     def __init__(
         self,
-        message="\nAcceptable: в наличии, выдана",
+        message="\nAcceptable: in stock, given",
     ):
         super().__init__(message)

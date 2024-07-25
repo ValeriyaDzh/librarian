@@ -9,7 +9,7 @@ class Book:
         self.title = title
         self.author = author
         self.year = year
-        self.status = "в наличии"
+        self.status = "in stock"
 
     @staticmethod
     def _generate_id() -> str:

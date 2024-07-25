@@ -77,7 +77,7 @@ class Librarian:
 
     def change_status(self, id: str, new_status: str):
         try:
-            if new_status not in ("в наличии", "выдана"):
+            if new_status not in ("in stock", "given"):
                 raise InvalidStatusException
 
             index = self._get_by_id(id)
